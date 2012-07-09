@@ -1,0 +1,19 @@
+<resources>
+
+    <string name="app_name">chiraukiTestTw</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="menu_settings">Settings</string>
+    <string name="title_activity_start">startActivity</string>
+    <string name="wellcome">Push the button below to\nauthorize with twitter.\nNo credentials are stored.</string>
+    <string name="validate">Validate</string>
+    <string name="tweetText">tweetText</string>
+    <string name="tweetID">tweetID</string>
+    <string name="tweetUser">tweetUser</string>
+    <string name="tweetUserId">tweetUserId</string>
+    <string name="tweetDate">tweetDate</string>
+    <string name="tweetVia">tweetVia</string>
+    <string name="fixedVia"> via </string>
+    <string name="refresh">Refresh</string>
+    <string name="loading">Refreshing Timeline</string>
+    <string name="redirect_twitter">Redirecting to Tweeter</string>
+</resources>

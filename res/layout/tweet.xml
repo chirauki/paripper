@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content" >
+
+    <TextView
+        android:id="@+id/tweetID"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/tweetID"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:visibility="invisible" />
+
+    <ImageView
+        android:id="@+id/tweetAvatar"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:paddingTop="8dp"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:src="@drawable/ic_launcher" />
+
+    <TextView
+        android:id="@+id/tweetUser"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/tweetAvatar"
+        android:paddingTop="16dp"
+        android:text="@string/tweetUser"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textSize="10dp" />
+    
+    <TextView
+        android:id="@+id/tweetUserId"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/tweetUser"
+        android:layout_toRightOf="@+id/tweetUser"
+        android:paddingLeft="3dp"
+        android:text="@string/tweetUserId"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textSize="10dp" />
+        
+    <TextView
+        android:id="@+id/tweetText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/tweetUser"
+        android:layout_below="@+id/tweetUser"
+        android:paddingRight="8dp"
+        android:text="@string/tweetText" />
+
+    <TextView
+        android:id="@+id/tweetDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toLeftOf="@+id/fixedVia"
+        android:layout_below="@+id/tweetText"
+        android:paddingBottom="8dp"
+        android:text="@string/tweetDate"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textSize="10dp" />
+    
+    <TextView
+        android:id="@+id/fixedVia"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toLeftOf="@+id/tweetVia"
+        android:layout_alignTop="@+id/tweetDate"
+        android:paddingBottom="8dp"
+        android:text="@string/fixedVia"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textSize="10dp" />
+    
+    <TextView
+        android:id="@+id/tweetVia"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignTop="@+id/fixedVia"
+        android:paddingBottom="8dp"
+        android:paddingRight="16dp"
+        android:text="@string/tweetVia"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textSize="10dp" />
+    
+</RelativeLayout>
