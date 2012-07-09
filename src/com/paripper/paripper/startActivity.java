@@ -32,7 +32,7 @@ public class startActivity extends Activity {
         
         progDialog = new ProgressDialog(this);
         setTitle("Paripper");
-        SharedPreferences sp = getSharedPreferences(Constants.SP_NAME, MODE_PRIVATE);
+        SharedPreferences sp = getSharedPreferences(Constants.SCHEME, MODE_PRIVATE);
         String token = null;
         String secret = null;
         if (sp.contains("token")) {
@@ -81,7 +81,6 @@ public class startActivity extends Activity {
 	private class validateTask extends AsyncTask<Integer, Void, Integer> {
 		@Override
 		protected Integer doInBackground(Integer... params) {
-			// TODO Auto-generated method stub
 			try {
 				twitter = new TwitterFactory().getInstance();
 				twitter.setOAuthConsumer(Constants.CONSUMER_KEY, Constants.CONSUMER_SEC);
@@ -91,7 +90,6 @@ public class startActivity extends Activity {
 				startActivity(twpage);
 			} catch (TwitterException ex) {
 				ex.printStackTrace();
-				//Toast.makeText(this, ex.getMessage(), Toast.LENGTH_LONG).show();
 				Log.e("in Main.OAuthLogin", ex.getMessage());
 			}
 			return -1;
@@ -122,7 +120,7 @@ public class startActivity extends Activity {
 				token = accessToken.getToken();
 				secret = accessToken.getTokenSecret();
 				
-				SharedPreferences sp = getSharedPreferences(Constants.SP_NAME, MODE_PRIVATE);
+				SharedPreferences sp = getSharedPreferences(Constants.SCHEME, MODE_PRIVATE);
 				SharedPreferences.Editor editor = sp.edit();
 				editor.putString("token", token);
 				editor.putString("secret", secret);

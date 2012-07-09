@@ -3,16 +3,28 @@ package com.paripper.paripper.Adapter;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.http.Header;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+
+import twitter4j.HashtagEntity;
+import twitter4j.Status;
+import twitter4j.URLEntity;
+import twitter4j.UserMentionEntity;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.text.Html;
+import android.text.format.DateFormat;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -25,11 +37,11 @@ import android.widget.TextView;
 import com.paripper.paripper.R;
 import com.paripper.paripper.util.Constants;
 
-public class TweetAdapter extends ArrayAdapter<HashMap<String, Object>> {
+public class TweetAdapter extends ArrayAdapter<Status> {
 	private final Context context;
-	private final List<HashMap<String, Object>> values;
+	private final List<Status> values;
 	
-	public TweetAdapter(Context context, List<HashMap<String, Object>> objects) {
+	public TweetAdapter(Context context, List<Status> objects) {
 		super(context, R.layout.tweet, objects);
 		// TODO Auto-generated constructor stub
 		this.context = context;
@@ -42,7 +54,8 @@ public class TweetAdapter extends ArrayAdapter<HashMap<String, Object>> {
 		LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	 	View rowView = inflater.inflate(R.layout.tweet, parent, false);
 	 	
-	 	HashMap<String, Object> rowData = values.get(position); 
+	 	String scheme = Constants.SCHEME;
+	 	Status tweet = values.get(position); 
 	 	
 	 	TextView tweetID = (TextView) rowView.findViewById(R.id.tweetID);
 	 	TextView tweetUser = (TextView) rowView.findViewById(R.id.tweetUser);
@@ -51,51 +64,40 @@ public class TweetAdapter extends ArrayAdapter<HashMap<String, Object>> {
 	 	tweetText.setMovementMethod(LinkMovementMethod.getInstance());
 	 	TextView tweetDate = (TextView) rowView.findViewById(R.id.tweetDate);
 	 	TextView tweetVia = (TextView) rowView.findViewById(R.id.tweetVia);
-	 	TextView fixedVia = (TextView) rowView.findViewById(R.id.fixedVia);
 	 	ImageView tweetAvatar = (ImageView) rowView.findViewById(R.id.tweetAvatar);
 	 	
-	 	tweetID.setText(rowData.get("id").toString());
- 		tweetUser.setText(rowData.get("user").toString());
-	 	tweetUserId.setText("(@" + rowData.get("userid").toString() + ")");
+	 	tweetID.setText(tweet.getId()+"");
+ 		tweetUser.setText(tweet.getUser().getName());
+	 	tweetUserId.setText("(@" + tweet.getUser().getScreenName() + ")");
 
- 		String txt = rowData.get("text").toString();
-	 	List<String> matches = regexExtract(txt, Constants.URL_REGEX);
-	 	if (matches.size() > 0) {
-	 		//there are URLs
-	 		for (int i=0; i < matches.size(); i++) {
-	 			String url = matches.get(i);
-	 			txt = txt.replace(url, "<a href=\"" + url + "\">" + url + "</a>");
-	 		}
-	 	}
-	 	matches = regexExtract(txt, Constants.USER_REGEX);
-	 	if (matches.size() > 0) {
-	 		//there are URLs
-	 		for (int i=0; i < matches.size(); i++) {
-	 			String user = matches.get(i).trim();
-	 			txt = txt.replace(user, "<a href=\"testtw://user?" + user.replace("@", "") + "\">" + user + "</a>");
-	 		}
-	 	}
-	 	matches = regexExtract(txt, Constants.HTAG_REGEX);
-	 	if (matches.size() > 0) {
-	 		//there are URLs
-	 		for (int i=0; i < matches.size(); i++) {
-	 			String htag = matches.get(i).trim();
-	 			txt = txt.replace(htag, "<a href=\"testtw://htag?" + htag.replace("#", "") + "\">" + htag + "</a>");
-	 		}
-	 	}
+ 		String txt = tweet.getText();
+
+ 		URLEntity[] urls = tweet.getURLEntities();
+ 		for (int i=0; i < urls.length; i++) {
+ 			URLEntity url = urls[i];
+ 			txt = txt.replace(url.getURL().toString(), "<a href=\"" + url.getURL().toString()
+ 							+ "\">" + url.getURL().toString() + "</a>");
+ 		}
+ 		
+ 		HashtagEntity[] htags = tweet.getHashtagEntities();
+ 		for (int i=0; i < htags.length; i++) {
+ 			HashtagEntity ht = htags[i];
+ 			txt = txt.replace("#" + ht.getText(), "<a href=\"" + scheme + "://htag?" + 
+ 						ht.getText() + "\">#" + ht.getText() + "</a>");
+ 		}
+
+ 		UserMentionEntity[] users = tweet.getUserMentionEntities();
+ 		for (int i=0; i < users.length; i++) {
+ 			UserMentionEntity user = users[i];
+ 			txt = txt.replace("@" + user.getScreenName(), "<a href=\"" + scheme + "://htag?" + 
+ 					user.getScreenName() + "\">@" + user.getScreenName() + "</a>");
+ 		}
 	 	tweetText.setText(Html.fromHtml(txt));
-	 	//tweetText.setAutoLinkMask(Linkify.ALL);
 
-	 	tweetDate.setText(rowData.get("date").toString());
-	 	tweetVia.setText(Html.fromHtml(rowData.get("via").toString()));
-	 	fixedVia.setText(" via ");
-	 	try {
-	 		tweetAvatar.setImageDrawable(new getAvatarTask().execute((URL)rowData.get("avatar")).get());
-	 	} catch (ExecutionException exex) {
-	 		Log.e("Error con la descarga del avatar", exex.getMessage());
-	 	} catch (InterruptedException exex) {
-	 		Log.e("Error con la descarga del avatar", exex.getMessage());
-	 	}
+	 	tweetDate.setText(DateFormat.format("dd/MM/yyy HH:mm ", tweet.getCreatedAt()));
+	 	tweetVia.setText(" " + Html.fromHtml(tweet.getSource()));
+	 	tweetAvatar.setImageURI(Uri.parse(tweet.getUser().getProfileImageURL().toString()));
+	 	
 		return rowView;
 	}
 	
@@ -111,6 +113,28 @@ public class TweetAdapter extends ArrayAdapter<HashMap<String, Object>> {
 				e.printStackTrace();
 				return null;
 			}
+		}
+	}
+	
+	private class doGet extends AsyncTask<String, Void, Header[]> {
+		@Override
+		protected Header[] doInBackground(String... params) {
+			try {
+				String url = params[0].toString();
+	 			HttpClient hc = new DefaultHttpClient();
+	 			HttpGet get = new HttpGet(url);
+
+	 			HttpResponse rp = hc.execute(get);
+
+	 			if(rp.getStatusLine().getStatusCode() == HttpStatus.SC_OK)
+	 			{
+	 				return rp.getHeaders("Content-type");
+	 			}
+	 			return null;
+ 			} catch (Exception e){
+ 				e.printStackTrace();
+ 				return new Header[0];
+ 			}
 		}
 	}
 	

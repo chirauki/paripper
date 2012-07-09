@@ -8,7 +8,7 @@ public class Constants {
 	public static final String CONSUMER_KEY = "xaRmGz6WyOZskVLnS3jmTw";
 	public static final String CONSUMER_SEC = "qBdLE0bDs35GBhYbQuV4XTRxOWJnyZ0bjtkge6mUwE";
 	public static final String CALLBACKURL = "paripper://callback";
-	public static final String SP_NAME = "paripper";
+	public static final String SCHEME = "paripper";
 	public static final int REFRESH_ID = 0;
 	public static final String URL_REGEX = "\\b(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]";
 	public static final String USER_REGEX = "(\\s@([A-Za-z0-9_]+))|(^@([A-Za-z0-9_]+))";

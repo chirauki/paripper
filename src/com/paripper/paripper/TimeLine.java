@@ -3,6 +3,7 @@ package com.paripper.paripper;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import twitter4j.Status;
 import twitter4j.Twitter;
@@ -48,43 +49,22 @@ public class TimeLine extends Activity {
 	}
 	
 	private void fillTimeLine() {
-        List<HashMap<String, Object>> inst = getTweets(); 
-        TweetAdapter tad = new TweetAdapter(this, inst);
-        lv.setAdapter(tad);	
-	}
-	
-	private List<HashMap<String, Object>> getTweets() {
-		List<HashMap<String, Object>> tweets = new ArrayList<HashMap<String, Object>>();
-    	// get tweets
-    	try {
-    		stTimeLine = new getTimeLineTask().execute().get();
-    		for(int i=0; i < stTimeLine.size(); i++) {
-				HashMap<String, Object> map = new HashMap<String, Object>();
-				Status st = stTimeLine.get(i);
-				map.put("text", st.getText());
-				map.put("date", st.getCreatedAt());
-				map.put("user", st.getUser().getName());
-				map.put("id", "" + st.getId());
-				map.put("userid", st.getUser().getScreenName());
-				map.put("via", st.getSource());
-				map.put("avatar", st.getUser().getProfileImageURL());
-				
-				tweets.add(map);
-			}
-			//ArrayAdapter<String> ads = new ArrayAdapter<String>(this, R.layout.timeline, statuses);
-			//setListAdapter(ads);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
+        List<Status> inst;
+		try {
+			inst = new getTimeLineTask().execute().get();
+			TweetAdapter tad = new TweetAdapter(this, inst);
+	        lv.setAdapter(tad);	
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		} catch (ExecutionException e) {
 			e.printStackTrace();
 		}
-    	return tweets;
 	}
 	
 	private class getTimeLineTask extends AsyncTask<Void, Void, List<twitter4j.Status>> {
 		List<twitter4j.Status> lt = null;
 		@Override
 		protected List<twitter4j.Status> doInBackground(Void... params) {
-			//List of hashmaps with needed info
 	    	try {
 	    		twitter = new TwitterFactory().getInstance();
 				twitter.setOAuthConsumer(Constants.CONSUMER_KEY, Constants.CONSUMER_SEC);
