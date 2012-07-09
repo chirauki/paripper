@@ -3,7 +3,7 @@
 	android:layout_width="fill_parent"
 	android:layout_height="fill_parent" >
 
-	<com.chirauki.chiraukitesttw.ListView.TimeLineListView android:id="@+id/timelinelist"
+	<com.paripper.paripper.ListView.TimeLineListView android:id="@+id/timelinelist"
 		android:layout_width="fill_parent"
 		android:layout_height="match_parent"/>
 

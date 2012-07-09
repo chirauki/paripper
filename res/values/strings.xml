@@ -1,9 +1,8 @@
 <resources>
 
-    <string name="app_name">chiraukiTestTw</string>
-    <string name="hello_world">Hello world!</string>
+    <string name="app_name">Paripper</string>
     <string name="menu_settings">Settings</string>
-    <string name="title_activity_start">startActivity</string>
+    <string name="title_activity_start">Paripper</string>
     <string name="wellcome">Push the button below to\nauthorize with twitter.\nNo credentials are stored.</string>
     <string name="validate">Validate</string>
     <string name="tweetText">tweetText</string>

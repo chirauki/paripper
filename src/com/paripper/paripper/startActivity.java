@@ -24,12 +24,13 @@ public class startActivity extends Activity {
 	String CALLBACKURL = Constants.CALLBACKURL;
 	String token = null;
 	String secret = null;
-	ProgressDialog progDialog = new ProgressDialog(this);
+	ProgressDialog progDialog = null;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
+        progDialog = new ProgressDialog(this);
         setTitle("Paripper");
         SharedPreferences sp = getSharedPreferences(Constants.SP_NAME, MODE_PRIVATE);
         String token = null;
