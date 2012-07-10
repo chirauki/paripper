@@ -76,11 +76,11 @@ public class TweetAdapter extends ArrayAdapter<Status> {
 	 	tweetAvatar = (ImageView) rowView.findViewById(R.id.tweetAvatar);
 	 	
 	 	tweetID.setText(tweet.getId()+"");
+	 	tweetUser.setText(tweet.getUser().getName());
 	 	String twUser = "<a href=\"" + scheme + "://user?" + 
 	 					tweet.getUser().getScreenName() + "\">@" + tweet.getUser().getScreenName()
 	 					+ "</a>";
- 		tweetUser.setText(tweet.getUser().getName());
-	 	tweetUserId.setText(Html.fromHtml(twUser));
+ 		tweetUserId.setText(Html.fromHtml(twUser));
 
  		String txt = tweet.getText();
 
@@ -107,7 +107,10 @@ public class TweetAdapter extends ArrayAdapter<Status> {
 	 	tweetText.setText(Html.fromHtml(txt));
 
 	 	tweetDate.setText(DateFormat.format("dd/MM/yyy hh:mm ", tweet.getCreatedAt()));
-	 	tweetVia.setText(" " + Html.fromHtml(tweet.getSource()));
+	 	
+	 	String viaTxt = tweet.getSource();
+	 	tweetVia.setText(" " + Html.fromHtml(viaTxt));
+	 	
 	 	try {
 			tweetAvatar.setImageDrawable(new getAvatarTask().execute(tweet.getUser().getProfileImageURL()).get());
 		} catch (InterruptedException e) {
