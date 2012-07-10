@@ -5,6 +5,8 @@ import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
 import twitter4j.auth.AccessToken;
 import twitter4j.auth.RequestToken;
+import twitter4j.conf.Configuration;
+import twitter4j.conf.ConfigurationBuilder;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -29,6 +31,10 @@ public class startActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+        ConfigurationBuilder cb = new ConfigurationBuilder();
+        cb.setAsyncNumThreads(10);
+        cb.build();
         
         progDialog = new ProgressDialog(this);
         setTitle("Paripper");

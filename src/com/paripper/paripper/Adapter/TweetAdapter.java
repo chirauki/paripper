@@ -1,10 +1,13 @@
 package com.paripper.paripper.Adapter;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -21,6 +24,9 @@ import twitter4j.Status;
 import twitter4j.URLEntity;
 import twitter4j.UserMentionEntity;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.text.Html;
@@ -39,8 +45,8 @@ import com.paripper.paripper.util.Constants;
 public class TweetAdapter extends ArrayAdapter<Status> {
 	private final Context context;
 	private final List<Status> values;
-	
 	private ImageView tweetAvatar = null;
+	private ImageView mediaIcon = null;
 	
 	public TweetAdapter(Context context, List<Status> objects) {
 		super(context, R.layout.tweet, objects);
@@ -115,33 +121,49 @@ public class TweetAdapter extends ArrayAdapter<Status> {
 	 	
 	 	tweetVia.setText(Html.fromHtml(tweet.getSource()));
 	 	
-	 	try {
-			tweetAvatar.setImageDrawable(new getImageURLTask().execute(tweet.getUser().getProfileImageURL()).get());
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} catch (ExecutionException e) {
-			e.printStackTrace();
-		}
+	 	new getAvatarTask().execute(tweet);
 	 	
 	 	if (media != null) {
-	 		ImageView mediaIcon = (ImageView)rowView.findViewById(R.id.tweetMedia);
-	 		try {
-	 			mediaIcon.setImageDrawable(new getImageURLTask().execute(media[0].getMediaURL()).get());
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			} catch (ExecutionException e) {
-				e.printStackTrace();
-			}
+	 		mediaIcon = (ImageView)rowView.findViewById(R.id.tweetMedia);
+	 		new getTweetMedia().execute(media[0].getMediaURL());
 	 	}
 		return rowView;
 	}
 	
-	public void setAvatar(Drawable d) {
-		tweetAvatar.setDrawingCacheEnabled(true);
-		tweetAvatar.setImageDrawable(d);
+	private class getAvatarTask extends AsyncTask<twitter4j.Status, Void, Drawable> {
+		@Override
+		protected Drawable doInBackground(twitter4j.Status... params) {
+			try {
+				twitter4j.Status t = params[0];
+				String user = t.getUser().getScreenName();
+				File av = new File(context.getExternalCacheDir(), "avatar_" + user);
+				if (av.exists()) {
+					Drawable d = Drawable.createFromPath(av.toString());
+					return d;
+				} else {
+					InputStream is = (InputStream) t.getUser().getProfileImageURL().getContent();
+					Drawable d = Drawable.createFromStream(is, "src name");
+					saveCacheBitmap(((BitmapDrawable)d).getBitmap(), "avatar_" + user);
+					return d;
+				}
+			}catch (Exception e) {
+				e.printStackTrace();
+				return null;
+			}
+		}
+
+		@Override
+		protected void onPostExecute(Drawable result) {
+			Drawable orig = context.getResources().getDrawable(R.drawable.ic_launcher);
+			//if (orig.equals(tweetAvatar.getDrawable())) {
+				tweetAvatar.setImageDrawable(result);
+				tweetAvatar.invalidateDrawable(result);	
+			//}
+			super.onPostExecute(result);
+		}
 	}
 	
-	private class getImageURLTask extends AsyncTask<URL, Void, Drawable> {
+	private class getTweetMedia extends AsyncTask<URL, Void, Drawable> {
 		@Override
 		protected Drawable doInBackground(URL... params) {
 			try {
@@ -158,11 +180,47 @@ public class TweetAdapter extends ArrayAdapter<Status> {
 		@Override
 		protected void onPostExecute(Drawable result) {
 			super.onPostExecute(result);
-			//setAvatar(result);
+			mediaIcon.setImageDrawable(result);
 		}
 	}
 	
-	private class doGet extends AsyncTask<String, Void, Header[]> {
+	/**
+	 * Loads image from file
+	 * @param file file to read from
+	 * @return Bitmap image
+	 */
+	private Bitmap getCacheBitmap(String file) {
+		Bitmap bm = null; 
+		File cache = context.getExternalCacheDir();
+		File inf = new File(cache, file);
+		bm = BitmapFactory.decodeFile(inf.toString());
+		return bm;
+	}
+	
+	/**
+	 * Stores source Bitmap on file
+	 * @param bm Source Bitmap object to save
+	 * @param file File to save the Bitmap to
+	 * @return 0 if could save correctly, -1 otherwise
+	 */
+	private int saveCacheBitmap(Bitmap bm, String file) {
+		try {
+			File cache = context.getExternalCacheDir();
+			File of = new File(cache, file);
+			FileOutputStream out = new FileOutputStream(of);
+			bm.compress(Bitmap.CompressFormat.PNG, 85, out);
+			out.flush();
+			out.close();
+			return 0;
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return -1;
+	}
+	
+ 	private class doGet extends AsyncTask<String, Void, Header[]> {
 		@Override
 		protected Header[] doInBackground(String... params) {
 			try {

@@ -14,7 +14,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.paripper.paripper.Adapter.TweetAdapter;
 import com.paripper.paripper.ListView.PullToRefreshListView;
@@ -49,23 +48,19 @@ public class TimeLine extends Activity {
 		// Set a listener to be invoked when the list should be refreshed.
         lv.setOnRefreshListener(new OnRefreshListener() {
             public void onRefresh() {
-                // Do work to refresh the list here.
-                //new GetDataTask().execute();
-            	fillTimeLine();
-            	//Toast.makeText(getApplicationContext(), "Refresh", 2).show();
-            	lv.onRefreshComplete();
+            	try {
+					new getTimeLineTask().execute().get();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				} catch (ExecutionException e) {
+					e.printStackTrace();
+				}
+            	lv.invalidateViews();
             }
         });
         
-		fillTimeLine();
-	}
-	
-	private void fillTimeLine() {
-        List<Status> inst;
 		try {
-			inst = new getTimeLineTask().execute().get();
-			TweetAdapter tad = new TweetAdapter(this, inst);
-	        lv.setAdapter(tad);	
+			new getTimeLineTask().execute().get();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		} catch (ExecutionException e) {
@@ -74,7 +69,6 @@ public class TimeLine extends Activity {
 	}
 	
 	private class getTimeLineTask extends AsyncTask<Void, Void, List<twitter4j.Status>> {
-		//List<twitter4j.Status> lt = null;
 		@Override
 		protected List<twitter4j.Status> doInBackground(Void... params) {
 	    	try {
@@ -93,16 +87,15 @@ public class TimeLine extends Activity {
 
 		@Override
 		protected void onPostExecute(List<twitter4j.Status> result) {
+			TweetAdapter tad = new TweetAdapter(getApplicationContext(), result);
+	        lv.setAdapter(tad);
+	        lv.onRefreshComplete();
 			super.onPostExecute(result);
-			//lt = result;
-			progDialog.dismiss();
 		}
 
 		@Override
 		protected void onPreExecute() {
 			super.onPreExecute();
-			progDialog.setMessage(getString(R.string.loading));
-			progDialog.show();
 		}
 	}
 	
@@ -117,10 +110,15 @@ public class TimeLine extends Activity {
     public boolean onMenuItemSelected(int featureId, MenuItem item) {
         switch(item.getItemId()) {
             case Constants.REFRESH_ID:
-                fillTimeLine();
+            	try {
+        			new getTimeLineTask().execute().get();
+        		} catch (InterruptedException e) {
+        			e.printStackTrace();
+        		} catch (ExecutionException e) {
+        			e.printStackTrace();
+        		}
                 return true;
         }
-
         return super.onMenuItemSelected(featureId, item);
     }
 }
