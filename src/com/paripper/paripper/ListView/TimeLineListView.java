@@ -3,6 +3,7 @@ package com.paripper.paripper.ListView;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
+import android.view.animation.RotateAnimation;
 import android.widget.ListView;
 
 public class TimeLineListView extends ListView {
@@ -15,28 +16,31 @@ public class TimeLineListView extends ListView {
 	{
 		super(context);
 		mContext = context;
-		initBounceListView();
+		initTimeLineListView();
 	}
 
 	public TimeLineListView(Context context, AttributeSet attrs)
 	{
 		super(context, attrs);
 		mContext = context;
-		initBounceListView();
+		initTimeLineListView();
 	}
 
 	public TimeLineListView(Context context, AttributeSet attrs, int defStyle)
 	{
 		super(context, attrs, defStyle);
 		mContext = context;
-		initBounceListView();
+		initTimeLineListView();
 	}
 
-	private void initBounceListView()
+	private void initTimeLineListView()
 	{
 		//get the density of the screen and do some maths with it on the max overscroll distance
 		//variable so that you get similar behaviors no matter what the screen size
-
+		this.setAnimation(new RotateAnimation(0, -180,
+                RotateAnimation.RELATIVE_TO_SELF, 0.5f,
+                RotateAnimation.RELATIVE_TO_SELF, 0.5f));
+		
 		final DisplayMetrics metrics = mContext.getResources().getDisplayMetrics();
         	final float density = metrics.density;
 
@@ -49,6 +53,4 @@ public class TimeLineListView extends ListView {
 		//This is where the magic happens, we have replaced the incoming maxOverScrollY with our own custom variable mMaxYOverscrollDistance; 
 		return super.overScrollBy(deltaX, deltaY, scrollX, scrollY, scrollRangeX, scrollRangeY, maxOverScrollX, mMaxYOverscrollDistance, isTouchEvent);
 	}
-
-	
 }

@@ -1,7 +1,5 @@
 package com.paripper.paripper;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -16,18 +14,19 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.paripper.paripper.Adapter.TweetAdapter;
-import com.paripper.paripper.ListView.TimeLineListView;
+import com.paripper.paripper.ListView.PullToRefreshListView;
+import com.paripper.paripper.ListView.PullToRefreshListView.OnRefreshListener;
 import com.paripper.paripper.util.Constants;
 
-//public class TimeLine extends ListActivity {
 public class TimeLine extends Activity {
 	Twitter twitter = null;
 	String token = null;
 	String secret = null;
 	List<Status> stTimeLine = null;
-	TimeLineListView lv = null; 
+	PullToRefreshListView lv = null; 
 	ProgressDialog progDialog = null;
 	
 	@Override
@@ -43,8 +42,21 @@ public class TimeLine extends Activity {
 		progDialog = new ProgressDialog(this);
 		progDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 		
-		setContentView(R.layout.timeline);
-		lv = (TimeLineListView)findViewById(R.id.timelinelist);
+		//setContentView(R.layout.timeline);
+		setContentView(R.layout.refresh_timeline);
+		lv = (PullToRefreshListView)findViewById(R.id.timelinelist);
+		
+		// Set a listener to be invoked when the list should be refreshed.
+        lv.setOnRefreshListener(new OnRefreshListener() {
+            public void onRefresh() {
+                // Do work to refresh the list here.
+                //new GetDataTask().execute();
+            	fillTimeLine();
+            	//Toast.makeText(getApplicationContext(), "Refresh", 2).show();
+            	lv.onRefreshComplete();
+            }
+        });
+        
 		fillTimeLine();
 	}
 	
