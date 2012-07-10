@@ -41,6 +41,8 @@ public class TweetAdapter extends ArrayAdapter<Status> {
 	private final Context context;
 	private final List<Status> values;
 	
+	private ImageView tweetAvatar = null;
+	
 	public TweetAdapter(Context context, List<Status> objects) {
 		super(context, R.layout.tweet, objects);
 		// TODO Auto-generated constructor stub
@@ -60,15 +62,20 @@ public class TweetAdapter extends ArrayAdapter<Status> {
 	 	TextView tweetID = (TextView) rowView.findViewById(R.id.tweetID);
 	 	TextView tweetUser = (TextView) rowView.findViewById(R.id.tweetUser);
 	 	TextView tweetUserId = (TextView) rowView.findViewById(R.id.tweetUserId);
+	 	tweetUserId.setMovementMethod(LinkMovementMethod.getInstance());
 	 	TextView tweetText = (TextView) rowView.findViewById(R.id.tweetText);
 	 	tweetText.setMovementMethod(LinkMovementMethod.getInstance());
 	 	TextView tweetDate = (TextView) rowView.findViewById(R.id.tweetDate);
 	 	TextView tweetVia = (TextView) rowView.findViewById(R.id.tweetVia);
-	 	ImageView tweetAvatar = (ImageView) rowView.findViewById(R.id.tweetAvatar);
+	 	tweetVia.setMovementMethod(LinkMovementMethod.getInstance());
+	 	tweetAvatar = (ImageView) rowView.findViewById(R.id.tweetAvatar);
 	 	
 	 	tweetID.setText(tweet.getId()+"");
+	 	String twUser = "<a href=\"" + scheme + "://user?" + 
+	 					tweet.getUser().getScreenName() + "\">@" + tweet.getUser().getScreenName()
+	 					+ "</a>";
  		tweetUser.setText(tweet.getUser().getName());
-	 	tweetUserId.setText("(@" + tweet.getUser().getScreenName() + ")");
+	 	tweetUserId.setText(Html.fromHtml(twUser));
 
  		String txt = tweet.getText();
 
@@ -76,7 +83,7 @@ public class TweetAdapter extends ArrayAdapter<Status> {
  		for (int i=0; i < urls.length; i++) {
  			URLEntity url = urls[i];
  			txt = txt.replace(url.getURL().toString(), "<a href=\"" + url.getURL().toString()
- 							+ "\">" + url.getURL().toString() + "</a>");
+ 							+ "\">" + url.getDisplayURL() + "</a>");
  		}
  		
  		HashtagEntity[] htags = tweet.getHashtagEntities();
@@ -94,11 +101,15 @@ public class TweetAdapter extends ArrayAdapter<Status> {
  		}
 	 	tweetText.setText(Html.fromHtml(txt));
 
-	 	tweetDate.setText(DateFormat.format("dd/MM/yyy HH:mm ", tweet.getCreatedAt()));
+	 	tweetDate.setText(DateFormat.format("dd/MM/yyy hh:mm ", tweet.getCreatedAt()));
 	 	tweetVia.setText(" " + Html.fromHtml(tweet.getSource()));
-	 	tweetAvatar.setImageURI(Uri.parse(tweet.getUser().getProfileImageURL().toString()));
-	 	
+	 	new getAvatarTask().execute(tweet.getUser().getProfileImageURL());
 		return rowView;
+	}
+	
+	public void setAvatar(Drawable d) {
+		tweetAvatar.setDrawingCacheEnabled(true);
+		tweetAvatar.setImageDrawable(d);
 	}
 	
 	private class getAvatarTask extends AsyncTask<URL, Void, Drawable> {
@@ -113,6 +124,13 @@ public class TweetAdapter extends ArrayAdapter<Status> {
 				e.printStackTrace();
 				return null;
 			}
+		}
+
+		@Override
+		protected void onPostExecute(Drawable result) {
+			super.onPostExecute(result);
+			setAvatar(result);
+			
 		}
 	}
 	

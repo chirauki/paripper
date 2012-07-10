@@ -1,13 +1,12 @@
 package com.paripper.paripper.ListView;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.widget.ListView;
 
 public class TimeLineListView extends ListView {
-    private static final int MAX_Y_OVERSCROLL_DISTANCE = 100;
+    private static final int MAX_Y_OVERSCROLL_DISTANCE = 75;
 
     private Context mContext;
 	private int mMaxYOverscrollDistance;
@@ -51,4 +50,5 @@ public class TimeLineListView extends ListView {
 		return super.overScrollBy(deltaX, deltaY, scrollX, scrollY, scrollRangeX, scrollRangeY, maxOverScrollX, mMaxYOverscrollDistance, isTouchEvent);
 	}
 
+	
 }

@@ -62,7 +62,7 @@ public class TimeLine extends Activity {
 	}
 	
 	private class getTimeLineTask extends AsyncTask<Void, Void, List<twitter4j.Status>> {
-		List<twitter4j.Status> lt = null;
+		//List<twitter4j.Status> lt = null;
 		@Override
 		protected List<twitter4j.Status> doInBackground(Void... params) {
 	    	try {
@@ -82,7 +82,7 @@ public class TimeLine extends Activity {
 		@Override
 		protected void onPostExecute(List<twitter4j.Status> result) {
 			super.onPostExecute(result);
-			lt = result;
+			//lt = result;
 			progDialog.dismiss();
 		}
 
