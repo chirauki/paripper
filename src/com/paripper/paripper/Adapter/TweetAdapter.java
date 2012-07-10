@@ -1,5 +1,8 @@
 package com.paripper.paripper.Adapter;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
@@ -20,8 +23,9 @@ import twitter4j.Status;
 import twitter4j.URLEntity;
 import twitter4j.UserMentionEntity;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.text.Html;
 import android.text.format.DateFormat;
@@ -35,6 +39,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.paripper.paripper.R;
+import com.paripper.paripper.util.AvatarDownloader;
 import com.paripper.paripper.util.Constants;
 
 public class TweetAdapter extends ArrayAdapter<Status> {
@@ -103,7 +108,26 @@ public class TweetAdapter extends ArrayAdapter<Status> {
 
 	 	tweetDate.setText(DateFormat.format("dd/MM/yyy hh:mm ", tweet.getCreatedAt()));
 	 	tweetVia.setText(" " + Html.fromHtml(tweet.getSource()));
-	 	new getAvatarTask().execute(tweet.getUser().getProfileImageURL());
+	 	try {
+			tweetAvatar.setImageDrawable(new getAvatarTask().execute(tweet.getUser().getProfileImageURL()).get());
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		} catch (ExecutionException e) {
+			e.printStackTrace();
+		}
+	 	//new getAvatarTask().execute(tweet.getUser().getProfileImageURL());
+//	 	try {
+//			FileInputStream input = getContext().openFileInput(
+//								getContext().getExternalCacheDir().getAbsolutePath() +
+//								File.separator +
+//								tweet.getUser().getScreenName());
+//			Bitmap bp = BitmapFactory.decodeStream(input);
+//			tweetAvatar.setImageBitmap(bp);			
+//		} catch (FileNotFoundException e) {
+//			//e.printStackTrace();
+//			Log.w("TimeLine", tweet.getUser().getName() + " avatar not found. Launching new task");
+//			new AvatarDownloader(getContext()).execute(tweet.getUser().getScreenName());
+//		}
 		return rowView;
 	}
 	
@@ -129,8 +153,7 @@ public class TweetAdapter extends ArrayAdapter<Status> {
 		@Override
 		protected void onPostExecute(Drawable result) {
 			super.onPostExecute(result);
-			setAvatar(result);
-			
+			//setAvatar(result);
 		}
 	}
 	
