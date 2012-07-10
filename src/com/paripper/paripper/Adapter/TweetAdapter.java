@@ -1,8 +1,5 @@
 package com.paripper.paripper.Adapter;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
@@ -19,18 +16,16 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 
 import twitter4j.HashtagEntity;
+import twitter4j.MediaEntity;
 import twitter4j.Status;
 import twitter4j.URLEntity;
 import twitter4j.UserMentionEntity;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.text.Html;
 import android.text.format.DateFormat;
 import android.text.method.LinkMovementMethod;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,7 +34,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.paripper.paripper.R;
-import com.paripper.paripper.util.AvatarDownloader;
 import com.paripper.paripper.util.Constants;
 
 public class TweetAdapter extends ArrayAdapter<Status> {
@@ -50,19 +44,24 @@ public class TweetAdapter extends ArrayAdapter<Status> {
 	
 	public TweetAdapter(Context context, List<Status> objects) {
 		super(context, R.layout.tweet, objects);
-		// TODO Auto-generated constructor stub
 		this.context = context;
 		this.values = objects;
 	}
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		// TODO Auto-generated method stub
-		LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-	 	View rowView = inflater.inflate(R.layout.tweet, parent, false);
-	 	
-	 	String scheme = Constants.SCHEME;
+		String scheme = Constants.SCHEME;
 	 	Status tweet = values.get(position); 
+	 	View rowView = null;
+	 	
+	 	MediaEntity[] media = tweet.getMediaEntities();
+	 	if (media != null) {
+	 		LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+	 		rowView = inflater.inflate(R.layout.tweet_media, parent, false);	
+	 	} else {
+		 	LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		 	rowView = inflater.inflate(R.layout.tweet, parent, false);
+	 	}
 	 	
 	 	TextView tweetID = (TextView) rowView.findViewById(R.id.tweetID);
 	 	TextView tweetUser = (TextView) rowView.findViewById(R.id.tweetUser);
@@ -83,7 +82,13 @@ public class TweetAdapter extends ArrayAdapter<Status> {
  		tweetUserId.setText(Html.fromHtml(twUser));
 
  		String txt = tweet.getText();
-
+ 		
+ 		if (media != null) {
+ 			for (int i = 0; i < media.length; i++) {
+ 				txt = txt.replace(media[i].getURL().toString(), "");
+ 			}
+ 		}
+ 		
  		URLEntity[] urls = tweet.getURLEntities();
  		for (int i=0; i < urls.length; i++) {
  			URLEntity url = urls[i];
@@ -106,31 +111,28 @@ public class TweetAdapter extends ArrayAdapter<Status> {
  		}
 	 	tweetText.setText(Html.fromHtml(txt));
 
-	 	tweetDate.setText(DateFormat.format("dd/MM/yyy hh:mm ", tweet.getCreatedAt()));
+	 	tweetDate.setText(DateFormat.format("dd/MM/yyy hh:mm", tweet.getCreatedAt()));
 	 	
-	 	String viaTxt = tweet.getSource();
-	 	tweetVia.setText(" " + Html.fromHtml(viaTxt));
+	 	tweetVia.setText(Html.fromHtml(tweet.getSource()));
 	 	
 	 	try {
-			tweetAvatar.setImageDrawable(new getAvatarTask().execute(tweet.getUser().getProfileImageURL()).get());
+			tweetAvatar.setImageDrawable(new getImageURLTask().execute(tweet.getUser().getProfileImageURL()).get());
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		} catch (ExecutionException e) {
 			e.printStackTrace();
 		}
-	 	//new getAvatarTask().execute(tweet.getUser().getProfileImageURL());
-//	 	try {
-//			FileInputStream input = getContext().openFileInput(
-//								getContext().getExternalCacheDir().getAbsolutePath() +
-//								File.separator +
-//								tweet.getUser().getScreenName());
-//			Bitmap bp = BitmapFactory.decodeStream(input);
-//			tweetAvatar.setImageBitmap(bp);			
-//		} catch (FileNotFoundException e) {
-//			//e.printStackTrace();
-//			Log.w("TimeLine", tweet.getUser().getName() + " avatar not found. Launching new task");
-//			new AvatarDownloader(getContext()).execute(tweet.getUser().getScreenName());
-//		}
+	 	
+	 	if (media != null) {
+	 		ImageView mediaIcon = (ImageView)rowView.findViewById(R.id.tweetMedia);
+	 		try {
+	 			mediaIcon.setImageDrawable(new getImageURLTask().execute(media[0].getMediaURL()).get());
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			} catch (ExecutionException e) {
+				e.printStackTrace();
+			}
+	 	}
 		return rowView;
 	}
 	
@@ -139,7 +141,7 @@ public class TweetAdapter extends ArrayAdapter<Status> {
 		tweetAvatar.setImageDrawable(d);
 	}
 	
-	private class getAvatarTask extends AsyncTask<URL, Void, Drawable> {
+	private class getImageURLTask extends AsyncTask<URL, Void, Drawable> {
 		@Override
 		protected Drawable doInBackground(URL... params) {
 			try {

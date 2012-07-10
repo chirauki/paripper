@@ -15,11 +15,11 @@
         android:id="@+id/tweetAvatar"
         android:layout_width="60dp"
         android:layout_height="60dp"
-        android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
-        android:paddingTop="8dp"
+        android:layout_alignParentTop="true"
         android:paddingLeft="8dp"
         android:paddingRight="8dp"
+        android:paddingTop="8dp"
         android:src="@drawable/ic_launcher" />
 
     <TextView
@@ -31,7 +31,7 @@
         android:text="@string/tweetUser"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:textSize="10dp" />
-    
+
     <TextView
         android:id="@+id/tweetUserId"
         android:layout_width="wrap_content"
@@ -42,7 +42,7 @@
         android:text="@string/tweetUserId"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:textSize="10dp" />
-        
+
     <TextView
         android:id="@+id/tweetText"
         android:layout_width="wrap_content"
@@ -52,42 +52,56 @@
         android:paddingRight="8dp"
         android:text="@string/tweetText" />
 
-    <TextView
-        android:id="@+id/tweetDate"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toLeftOf="@+id/fixedVia"
+    <ImageView
+        android:id="@+id/tweetMedia"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_alignParentRight="true"
         android:layout_below="@+id/tweetText"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
         android:paddingTop="8dp"
-        android:paddingBottom="8dp"
-        android:text="@string/tweetDate"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:textSize="10dp" />
-    
-    <TextView
-        android:id="@+id/fixedVia"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toLeftOf="@+id/tweetVia"
-        android:layout_alignTop="@+id/tweetDate"
-        android:paddingBottom="8dp"
-        android:paddingTop="8dp"
-        android:text="@string/fixedVia"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:textSize="10dp" />
-    
+        android:src="@drawable/ic_launcher" />
+
     <TextView
         android:id="@+id/tweetVia"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
-        android:layout_alignTop="@+id/fixedVia"
+        android:layout_below="@+id/tweetMedia"
+        android:autoLink="web"
+        android:linksClickable="true"
         android:paddingBottom="8dp"
-        android:paddingTop="8dp"
         android:paddingRight="16dp"
+        android:paddingTop="8dp"
         android:text="@string/tweetVia"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:linksClickable="true"
         android:textSize="10dp" />
-    
+
+    <TextView
+        android:id="@+id/fixedVia"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/tweetVia"
+        android:layout_alignBottom="@+id/tweetVia"
+        android:layout_toLeftOf="@+id/tweetVia"
+        android:paddingBottom="8dp"
+        android:paddingTop="8dp"
+        android:text="@string/fixedVia"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textSize="10dp" />
+
+    <TextView
+        android:id="@+id/tweetDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/fixedVia"
+        android:layout_alignBottom="@+id/fixedVia"
+        android:layout_toLeftOf="@+id/fixedVia"
+        android:paddingBottom="8dp"
+        android:paddingTop="8dp"
+        android:text="@string/tweetDate"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textSize="10dp" />
+
 </RelativeLayout>

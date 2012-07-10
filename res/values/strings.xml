@@ -11,7 +11,7 @@
     <string name="tweetUserId">tweetUserId</string>
     <string name="tweetDate">tweetDate</string>
     <string name="tweetVia">tweetVia</string>
-    <string name="fixedVia"> via </string>
+    <string name="fixedVia">\u0020via\u0020</string>
     <string name="refresh">Refresh</string>
     <string name="loading">Refreshing Timeline</string>
     <string name="redirect_twitter">Redirecting to Tweeter</string>
