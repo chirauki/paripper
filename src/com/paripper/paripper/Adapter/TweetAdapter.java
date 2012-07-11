@@ -7,7 +7,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -121,7 +124,9 @@ public class TweetAdapter extends ArrayAdapter<Status> {
 	 	
 	 	tweetVia.setText(Html.fromHtml(tweet.getSource()));
 	 	
-	 	new getAvatarTask().execute(tweet);
+	 	HashMap<View,twitter4j.Status> mp = new HashMap<View,twitter4j.Status>();
+	 	mp.put(rowView, tweet);
+	 	new getAvatarTask().execute(mp);
 	 	
 	 	if (media != null) {
 	 		mediaIcon = (ImageView)rowView.findViewById(R.id.tweetMedia);
@@ -130,21 +135,34 @@ public class TweetAdapter extends ArrayAdapter<Status> {
 		return rowView;
 	}
 	
-	private class getAvatarTask extends AsyncTask<twitter4j.Status, Void, Drawable> {
+	//private class getAvatarTask extends AsyncTask<twitter4j.Status, Void, Drawable> {
+	private class getAvatarTask extends AsyncTask<HashMap<View,twitter4j.Status>, Void, HashMap<View,Drawable>> {
 		@Override
-		protected Drawable doInBackground(twitter4j.Status... params) {
+		protected HashMap<View,Drawable> doInBackground(HashMap<View,twitter4j.Status>... params) {
 			try {
-				twitter4j.Status t = params[0];
+				View thisRow = null;
+				twitter4j.Status t = null;
+				HashMap<View,twitter4j.Status> hm = params[0];
+				for (View row : hm.keySet()) {
+					thisRow = row;
+					t = hm.get(row);
+				}
 				String user = t.getUser().getScreenName();
 				File av = new File(context.getExternalCacheDir(), "avatar_" + user);
-				if (av.exists()) {
+				URL url = t.getUser().getProfileImageURL();
+				Date urlDate = new Date(url.openConnection().getIfModifiedSince());
+				if (av.exists() && new Date(av.lastModified()).after(urlDate)) {
 					Drawable d = Drawable.createFromPath(av.toString());
-					return d;
+					HashMap<View,Drawable> res = new HashMap<View,Drawable>();
+					res.put(thisRow, d);
+					return res;
 				} else {
 					InputStream is = (InputStream) t.getUser().getProfileImageURL().getContent();
 					Drawable d = Drawable.createFromStream(is, "src name");
 					saveCacheBitmap(((BitmapDrawable)d).getBitmap(), "avatar_" + user);
-					return d;
+					HashMap<View,Drawable> res = new HashMap<View,Drawable>();
+					res.put(thisRow, d);
+					return res;
 				}
 			}catch (Exception e) {
 				e.printStackTrace();
@@ -153,12 +171,16 @@ public class TweetAdapter extends ArrayAdapter<Status> {
 		}
 
 		@Override
-		protected void onPostExecute(Drawable result) {
-			Drawable orig = context.getResources().getDrawable(R.drawable.ic_launcher);
-			//if (orig.equals(tweetAvatar.getDrawable())) {
-				tweetAvatar.setImageDrawable(result);
-				tweetAvatar.invalidateDrawable(result);	
-			//}
+		protected void onPostExecute(HashMap<View,Drawable> result) {
+			View thisRow = null;
+			Drawable d = null;
+			HashMap<View,Drawable> hm = result;
+			for (View row : hm.keySet()) {
+				thisRow = row;
+				d = hm.get(row);
+			}
+			tweetAvatar.setImageDrawable(d);
+			thisRow.invalidate();	
 			super.onPostExecute(result);
 		}
 	}

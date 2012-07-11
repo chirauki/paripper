@@ -41,31 +41,18 @@ public class TimeLine extends Activity {
 		progDialog = new ProgressDialog(this);
 		progDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 		
-		//setContentView(R.layout.timeline);
 		setContentView(R.layout.refresh_timeline);
 		lv = (PullToRefreshListView)findViewById(R.id.timelinelist);
 		
 		// Set a listener to be invoked when the list should be refreshed.
         lv.setOnRefreshListener(new OnRefreshListener() {
             public void onRefresh() {
-            	try {
-					new getTimeLineTask().execute().get();
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				} catch (ExecutionException e) {
-					e.printStackTrace();
-				}
-            	lv.invalidateViews();
+            	new getTimeLineTask().execute();
+				lv.invalidateViews();
             }
         });
         
-		try {
-			new getTimeLineTask().execute().get();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} catch (ExecutionException e) {
-			e.printStackTrace();
-		}
+		new getTimeLineTask().execute();
 	}
 	
 	private class getTimeLineTask extends AsyncTask<Void, Void, List<twitter4j.Status>> {
@@ -110,14 +97,8 @@ public class TimeLine extends Activity {
     public boolean onMenuItemSelected(int featureId, MenuItem item) {
         switch(item.getItemId()) {
             case Constants.REFRESH_ID:
-            	try {
-        			new getTimeLineTask().execute().get();
-        		} catch (InterruptedException e) {
-        			e.printStackTrace();
-        		} catch (ExecutionException e) {
-        			e.printStackTrace();
-        		}
-                return true;
+            	new getTimeLineTask().execute();
+        		return true;
         }
         return super.onMenuItemSelected(featureId, item);
     }
