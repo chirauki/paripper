@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    >
+    <LinearLayout android:layout_height="wrap_content" android:layout_width="match_parent" android:id="@+id/linearLayout1" android:background="#ffffff">
+        <EditText android:layout_weight="1" 
+            	  android:layout_height="wrap_content" 
+            	  android:layout_width="211dp" 
+            	  android:id="@+id/etQuery" 
+            	  android:layout_margin="5dp" />
+        <Button android:layout_weight="1" 
+            	android:layout_height="wrap_content" 
+            	android:layout_width="wrap_content" 
+            	android:layout_margin="5dp" 
+            	android:id="@+id/btSearch" 
+            	android:text="ADSASD" />
+    </LinearLayout>
+	<android.support.v4.view.ViewPager
+        android:layout_width="match_parent"
+        android:id="@+id/viewPagerId" android:layout_height="match_parent"/>
+</LinearLayout>
