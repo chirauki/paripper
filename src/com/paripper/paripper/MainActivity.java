@@ -20,7 +20,7 @@ import android.view.View;
 
 import com.paripper.paripper.util.Constants;
 
-public class startActivity extends Activity {
+public class MainActivity extends Activity {
 	Twitter twitter = null;
 	RequestToken requestToken = null;
 	String CALLBACKURL = Constants.CALLBACKURL;
@@ -92,7 +92,7 @@ public class startActivity extends Activity {
 				twitter.setOAuthConsumer(Constants.CONSUMER_KEY, Constants.CONSUMER_SEC);
 				requestToken = twitter.getOAuthRequestToken(CALLBACKURL);
 				String authUrl = requestToken.getAuthenticationURL();
-				Intent twpage = new Intent(Intent.ACTION_VIEW, Uri.parse(authUrl)).setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NO_HISTORY | Intent.FLAG_FROM_BACKGROUND);
+				Intent twpage = new Intent(Intent.ACTION_VIEW, Uri.parse(authUrl)).setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP  | Intent.FLAG_ACTIVITY_NO_HISTORY | Intent.FLAG_FROM_BACKGROUND);
 				startActivity(twpage);
 			} catch (TwitterException ex) {
 				ex.printStackTrace();
@@ -105,7 +105,6 @@ public class startActivity extends Activity {
 		protected void onPostExecute(Integer result) {
 			super.onPostExecute(result);
 			progDialog.dismiss();
-
 		}
 		
 		@Override

@@ -1,7 +1,6 @@
 package com.paripper.paripper;
 
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 import twitter4j.Status;
 import twitter4j.Twitter;
@@ -10,6 +9,8 @@ import twitter4j.TwitterFactory;
 import twitter4j.auth.AccessToken;
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
@@ -27,11 +28,13 @@ public class TimeLine extends Activity {
 	List<Status> stTimeLine = null;
 	PullToRefreshListView lv = null; 
 	ProgressDialog progDialog = null;
-	
+	Context ctx = null;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
+		
+		ctx = this;
 		
 		setTitle("Timeline");
 		Bundle extras = getIntent().getExtras();
@@ -56,6 +59,7 @@ public class TimeLine extends Activity {
 	}
 	
 	private class getTimeLineTask extends AsyncTask<Void, Void, List<twitter4j.Status>> {
+	
 		@Override
 		protected List<twitter4j.Status> doInBackground(Void... params) {
 	    	try {
@@ -74,15 +78,10 @@ public class TimeLine extends Activity {
 
 		@Override
 		protected void onPostExecute(List<twitter4j.Status> result) {
-			TweetAdapter tad = new TweetAdapter(getApplicationContext(), result);
+			TweetAdapter tad = new TweetAdapter(ctx, result);
 	        lv.setAdapter(tad);
 	        lv.onRefreshComplete();
 			super.onPostExecute(result);
-		}
-
-		@Override
-		protected void onPreExecute() {
-			super.onPreExecute();
 		}
 	}
 	
