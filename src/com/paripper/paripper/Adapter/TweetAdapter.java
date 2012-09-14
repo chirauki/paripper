@@ -27,6 +27,7 @@ import twitter4j.URLEntity;
 import twitter4j.User;
 import twitter4j.UserMentionEntity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
@@ -37,11 +38,13 @@ import android.text.format.DateFormat;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.paripper.paripper.MediaBrowser;
 import com.paripper.paripper.R;
 import com.paripper.paripper.util.Constants;
 
@@ -79,6 +82,7 @@ public class TweetAdapter extends ArrayAdapter<Status> {
 	 	if (media != null) {
 	 		mediaIcon = (ImageView)rowView.findViewById(R.id.tweetMedia);
 	 		new getTweetMedia().execute(media[0].getMediaURL());
+ 			mediaIcon.setOnClickListener(new tweetMediaOnClickListener(context, tweet));
 	 	}
 	 		 	
 	 	TextView tweetID = (TextView) rowView.findViewById(R.id.tweetID);
@@ -258,5 +262,6 @@ public class TweetAdapter extends ArrayAdapter<Status> {
 
         return result;
     }
+
 
 }

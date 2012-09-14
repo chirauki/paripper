@@ -36,7 +36,6 @@ public class CustomPageAdapter extends PagerAdapter {
     @Override  
     public void finishUpdate(View arg0) {  
         // TODO Auto-generated method stub  
-          
     }  
   
     @Override  
@@ -50,8 +49,8 @@ public class CustomPageAdapter extends PagerAdapter {
         LinearLayout linearLayout = new LinearLayout(context);  
         linearLayout.setOrientation(1);  
           
-        final TextView textView = new TextView(context);  
-        textView.setText("Position: " + position);  
+        //final TextView textView = new TextView(context);  
+        //textView.setText("Position: " + position);  
           
         final ImageView image = new ImageView(context); 
         InputStream in = null;
@@ -65,7 +64,7 @@ public class CustomPageAdapter extends PagerAdapter {
 			e.printStackTrace();
 		}
         image.setImageBitmap(BitmapFactory.decodeStream(in));
-        linearLayout.addView(textView);  
+        //linearLayout.addView(textView);  
         linearLayout.addView(image);  
           
         ((ViewPager) collection).addView(linearLayout,0);  

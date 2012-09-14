@@ -31,5 +31,6 @@
 			</intent-filter>
         </activity>
         <activity android:name="TimeLine"></activity>
+        <activity android:name="MediaBrowser"></activity>
     </application>
 </manifest>
